@@ -13,6 +13,14 @@ RSpec.describe "StockIns", type: :request do
       expect(Item.count).to eq(1)
     end
 
+    it 'should not create new category if exist' do
+      FactoryBot.create(:category, name: "Electronics")
+
+      post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+      expect(response).to have_http_status(:created)
+      expect(Category.count).to eq(1)
+    end
+
     # TODO: should not create new category is exist
     # TODO: should not create bin if some bin empty
     # TODO: should not create item if exist
