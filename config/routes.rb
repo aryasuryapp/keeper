@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   resource :warehouses
+  resource :stock_ins
 end
