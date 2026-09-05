@@ -1,7 +1,6 @@
 class StockInsController < ApplicationController
   def create
-    params = item_params.merge(category_params)
-    item = ::StockInService.new(params).call
+    item = ::StockInService.new(stock_in_params).call
 
     render json: item, status: :created
 
@@ -26,11 +25,10 @@ class StockInsController < ApplicationController
 
   private
 
-  def item_params
-    params.require(:item).permit(:sku)
-  end
-
-  def category_params
-    params.require(:category).permit(:name)
+  def stock_in_params
+    {
+      "sku": params[:sku],
+      "category": params[:category]
+    }
   end
 end

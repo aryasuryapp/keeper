@@ -7,13 +7,13 @@ RSpec.describe "StockIns", type: :request do
     it 'should validate warehouse' do
       Warehouse.delete_all
 
-      post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
       expect(JSON.parse(response.body)["errors"]).to eq("No warehouse found")
     end
 
     it 'save item to warehouse' do
-      post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
       expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
@@ -24,7 +24,7 @@ RSpec.describe "StockIns", type: :request do
       it 'should not create bin if some bin empty' do
         FactoryBot.create(:bin, bin_number: 1, filled: false, warehouse_id: warehouse.id)
 
-        post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to be_nil
         expect(response).to have_http_status(:created)
@@ -36,9 +36,7 @@ RSpec.describe "StockIns", type: :request do
         FactoryBot.create(:bin, bin_number: 2, filled: false, id: 1, warehouse_id: warehouse.id)
         FactoryBot.create(:bin, bin_number: 1, filled: false, id: 2, warehouse_id: warehouse.id)
 
-        # TODO: body should be
-        # { "sku": "SKU-1234", "category": "Electronics" }
-        post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to be_nil
         expect(response).to have_http_status(:created)
@@ -58,7 +56,7 @@ RSpec.describe "StockIns", type: :request do
         FactoryBot.create(:bin, bin_number: 2, filled: true, warehouse_id: warehouse.id)
         FactoryBot.create(:bin, bin_number: 3, filled: true, warehouse_id: warehouse.id)
 
-        post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to eq("Warehouse is full")
         expect(response).to have_http_status(:unprocessable_entity)
@@ -68,7 +66,7 @@ RSpec.describe "StockIns", type: :request do
     it 'should not create new category if exist' do
       FactoryBot.create(:category, name: "Electronics")
 
-      post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
       expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
@@ -79,7 +77,7 @@ RSpec.describe "StockIns", type: :request do
       FactoryBot.create(:category, name: "Electronics", id: 1)
       FactoryBot.create(:item, sku: "SKU-001", id: 1, category_id: 1)
 
-      post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
       expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
