@@ -1,5 +1,6 @@
 class Bin < ApplicationRecord
   validates :warehouse_id, presence: true
+  validates :bin_number, presence: true
 
   before_save :validate_max_bins
 
