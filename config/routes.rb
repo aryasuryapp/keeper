@@ -8,10 +8,13 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  # TODO: use namespace api
-  resources :warehouses, only: [ :index, :create ]
-  get "warehouses/status", to: "warehouses#status"
-  resources :stock_ins, only: [ :create, :destroy ]
-  resources :items, only: [ :index ]
-  resources :bins, only: [ :index, :show ]
+  namespace :api do
+    namespace :v1 do
+      resources :warehouses, only: [ :index, :create ]
+      get "warehouses/status", to: "warehouses#status"
+      resources :stock_ins, only: [ :create, :destroy ]
+      resources :items, only: [ :index ]
+      resources :bins, only: [ :index, :show ]
+    end
+  end
 end
