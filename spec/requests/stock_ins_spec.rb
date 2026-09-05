@@ -80,7 +80,8 @@ RSpec.describe "StockIns", type: :request do
     end
 
     it 'should not create item if exist' do
-      FactoryBot.create(:item, sku: "SKU-001", id: 1)
+      FactoryBot.create(:category, name: "Electronics", id: 1)
+      FactoryBot.create(:item, sku: "SKU-001", id: 1, category_id: 1)
 
       post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
 
@@ -94,7 +95,8 @@ RSpec.describe "StockIns", type: :request do
   describe "DELETE /stock_ins" do
     it 'should free bin and delete bin_id on item' do
       bin = FactoryBot.create(:bin, id: 1, filled: true, warehouse_id: warehouse.id, bin_number: 1)
-      item = FactoryBot.create(:item, bin_id: bin.id, sku: "SKU-001")
+      category_electronic = FactoryBot.create(:category, name: "Electronics", id: 1)
+      item = FactoryBot.create(:item, bin_id: bin.id, sku: "SKU-001", category_id: category_electronic.id)
 
       delete "/stock_ins/1"
 

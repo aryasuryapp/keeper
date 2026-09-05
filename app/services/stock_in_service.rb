@@ -4,6 +4,7 @@ class StockInService
   end
 
   def call
+    # Given only have 1 warehouse
     warehouse = Warehouse.first
     unless warehouse
       raise "No warehouse found"

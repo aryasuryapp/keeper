@@ -10,5 +10,6 @@ Rails.application.routes.draw do
 
   # TODO: use namespace api
   resources :warehouses, only: [ :index, :create ]
+  get "warehouses/status", to: "warehouses#status"
   resources :stock_ins, only: [ :create, :destroy ]
 end
