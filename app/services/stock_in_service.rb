@@ -17,5 +17,6 @@ class StockInService
 
     item = Item.new(sku: @params["sku"], category_id: category.id, bin_id: bin.id)
     item.save!
+    item
   end
 end
