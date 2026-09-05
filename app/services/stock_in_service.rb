@@ -15,8 +15,9 @@ class StockInService
     end
 
     bin = Bin.where(filled: false, warehouse_id: warehouse.id).order(:bin_number).first
-    # TODO: bin should be filled
-    unless bin
+    if bin
+      bin.update!(filled: true)
+    else
       last_bin = Bin.where(warehouse_id: warehouse.id).order(:bin_number).last
       if last_bin
         bin = Bin.create!(filled: true, warehouse_id: warehouse.id, bin_number: (last_bin.bin_number + 1))
