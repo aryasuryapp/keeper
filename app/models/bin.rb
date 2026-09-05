@@ -6,6 +6,8 @@ class Bin < ApplicationRecord
 
   has_one :item
 
+  # TODO: warehouse deleted, bin should be deleted
+
   private
 
   def validate_max_bins

@@ -10,6 +10,13 @@ class StockInService
       raise "No warehouse found"
     end
 
+    # TODO: add unique index in DB
+    item = Item.find_by(sku: @params[:sku])
+    if item.present? && item.bin_id
+      bin = Bin.find(item.bin_id)
+      return { message: message(bin), status: :ok }
+    end
+
     category = Category.find_by(name: @params[:category])
     unless category
       category = Category.create!(name: @params[:category])
@@ -27,18 +34,18 @@ class StockInService
       end
     end
 
-    # TODO: add unique index in DB
-    item = Item.find_by(sku: @params[:sku])
     if item.nil?
-      item = Item.new(sku: @params[:sku], category_id: category.id, bin_id: bin.id)
-    elsif item.bin_id
-      return item
+      Item.create!(sku: @params[:sku], category_id: category.id, bin_id: bin.id)
     else
-      item.bin_id = bin.id
+      item.update!(bin_id: bin.id)
     end
 
-    item.save!
+    { message: message(bin), status: :created }
+  end
 
+  private
+
+  def message(bin)
     {
       "bin_number": bin.bin_number,
       "message": "Allocated bin number: #{bin.bin_number}"
