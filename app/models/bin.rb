@@ -3,6 +3,8 @@ class Bin < ApplicationRecord
 
   before_save :validate_max_bins
 
+  has_one :item
+
   private
 
   def validate_max_bins

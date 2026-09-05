@@ -15,6 +15,7 @@ class StockInService
     end
 
     bin = Bin.where(filled: false, warehouse_id: warehouse.id).order(:bin_number).first
+    # TODO: bin should be filled
     unless bin
       last_bin = Bin.where(warehouse_id: warehouse.id).order(:bin_number).last
       if last_bin
@@ -36,6 +37,9 @@ class StockInService
 
     item.save!
 
-    item
+    {
+      "bin_number": bin.bin_number,
+      "message": "Allocated bin number: #{bin.bin_number}"
+    }
   end
 end
