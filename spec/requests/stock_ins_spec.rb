@@ -20,6 +20,28 @@ RSpec.describe "StockIns", type: :request do
       expect(Item.count).to eq(1)
     end
 
+    it 'should not create new category if exist' do
+      FactoryBot.create(:category, name: "Electronics")
+
+      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+
+      expect(JSON.parse(response.body)["errors"]).to be_nil
+      expect(response).to have_http_status(:created)
+      expect(Category.count).to eq(1)
+    end
+
+    it 'should not create item if exist' do
+      FactoryBot.create(:category, name: "Electronics", id: 1)
+      FactoryBot.create(:item, sku: "SKU-001", id: 1, category_id: 1)
+
+      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+
+      expect(JSON.parse(response.body)["errors"]).to be_nil
+      expect(response).to have_http_status(:created)
+      expect(Item.count).to eq(1)
+      expect(Item.first.bin_id).not_to be_nil
+    end
+
     describe 'validate bin' do
       it 'should not create bin if some bin empty' do
         FactoryBot.create(:bin, bin_number: 1, filled: false, warehouse_id: warehouse.id)
@@ -63,26 +85,37 @@ RSpec.describe "StockIns", type: :request do
       end
     end
 
-    it 'should not create new category if exist' do
-      FactoryBot.create(:category, name: "Electronics")
+    describe 'multiple request same sku' do
+      before do
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        expect(JSON.parse(response.body)).to eq(
+          { "bin_number" => 1, "message" => "Allocated bin number: 1" }
+        )
+        expect(response).to have_http_status(201)
+      end
 
-      expect(JSON.parse(response.body)["errors"]).to be_nil
-      expect(response).to have_http_status(:created)
-      expect(Category.count).to eq(1)
-    end
+      # make sku as idempotency key
+      it 'return detail item and bin' do
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-    it 'should not create item if exist' do
-      FactoryBot.create(:category, name: "Electronics", id: 1)
-      FactoryBot.create(:item, sku: "SKU-001", id: 1, category_id: 1)
+        expect(JSON.parse(response.body)).to eq(
+          { "bin_number" => 1, "message" => "Allocated bin number: 1" }
+        )
+        expect(response).to have_http_status(200)
+      end
 
-      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+      it 'should only create 1 item' do
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-      expect(JSON.parse(response.body)["errors"]).to be_nil
-      expect(response).to have_http_status(:created)
-      expect(Item.count).to eq(1)
-      expect(Item.first.bin_id).not_to be_nil
+        expect(Item.count).to eq(1)
+      end
+
+      it 'should create 1 bin' do
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+
+        expect(Bin.count).to eq(1)
+      end
     end
   end
 

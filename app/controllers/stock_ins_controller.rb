@@ -1,9 +1,8 @@
 class StockInsController < ApplicationController
   def create
-    item = ::StockInService.new(stock_in_params).call
+    result = ::StockInService.new(stock_in_params).call
 
-    render json: item, status: :created
-
+    render json: result[:message], status: result[:status]
   rescue => e
     render json: {
       errors: e
