@@ -6,6 +6,7 @@ application up and running.
 Things you may want to cover:
 
 * Ruby version
+ruby-3.3.7
 
 * System dependencies
 
