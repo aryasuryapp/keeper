@@ -9,6 +9,7 @@ RSpec.describe "StockIns", type: :request do
     it 'save item to warehouse' do
       post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
 
+      expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
       expect(Item.count).to eq(1)
     end
@@ -17,6 +18,8 @@ RSpec.describe "StockIns", type: :request do
       FactoryBot.create(:category, name: "Electronics")
 
       post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+
+      expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
       expect(Category.count).to eq(1)
     end
@@ -25,6 +28,8 @@ RSpec.describe "StockIns", type: :request do
       FactoryBot.create(:bin, bin_number: 1, filled: false)
 
       post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+
+      expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
       expect(Bin.count).to eq(1)
     end
@@ -34,10 +39,21 @@ RSpec.describe "StockIns", type: :request do
       FactoryBot.create(:bin, bin_number: 1, filled: false, id: 2)
 
       post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+
+      expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)["bin_id"]).to eq(2)
     end
 
-    # TODO: should not create item if exist
+    it 'should not create item if exist' do
+      FactoryBot.create(:item, sku: "SKU-001", id: 1)
+
+      post '/stock_ins', params: { item: { sku: "SKU-001" }, category: { name: "Electronics" } }
+
+      expect(JSON.parse(response.body)["errors"]).to be_nil
+      expect(response).to have_http_status(:created)
+      expect(Item.count).to eq(1)
+      expect(Item.first.bin_id).not_to be_nil
+    end
   end
 end

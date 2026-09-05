@@ -15,8 +15,18 @@ class StockInService
       bin = Bin.create!(filled: true)
     end
 
-    item = Item.new(sku: @params["sku"], category_id: category.id, bin_id: bin.id)
+    # TODO: add unique index in DB
+    item = Item.find_by(sku: @params["sku"])
+    if item.nil?
+      item = Item.new(sku: @params["sku"], category_id: category.id, bin_id: bin.id)
+    elsif item.bin_id
+      return item
+    else
+      item.bin_id = bin.id
+    end
+
     item.save!
+
     item
   end
 end
