@@ -13,7 +13,7 @@ RSpec.describe "Items", type: :request do
       FactoryBot.create(:item, sku: "SKU-9999", bin_id: 3, category_id: 1)
       FactoryBot.create(:item, sku: "SKU-0001", bin_id: nil, category_id: 1)
 
-      get '/items?category=Electronics'
+      get '/api/v1/items?category=Electronics'
 
       expect(JSON.parse(response.body)).to eq([ "SKU-1234", "SKU-9999" ])
       expect(response).to have_http_status(200)
@@ -21,7 +21,7 @@ RSpec.describe "Items", type: :request do
 
     describe "when no items in category X" do
       it 'return message no items' do
-        get '/items?category=Electronics'
+        get '/api/v1/items?category=Electronics'
 
         expect(JSON.parse(response.body)["message"]).to eq("No items in this category")
         expect(response).to have_http_status(200)

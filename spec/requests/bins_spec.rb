@@ -15,7 +15,7 @@ RSpec.describe "Bins", type: :request do
       FactoryBot.create(:item, sku: "SKU-9999", bin_id: 2, category_id: 1)
       FactoryBot.create(:item, sku: "SKU-0001", bin_id: 4, category_id: 1)
 
-      get '/bins'
+      get '/api/v1/bins'
 
       expect(JSON.parse(response.body)).to eq({ "data"=>[ 1, 2, 4 ], "message"=>"Success get bin numbers" })
       expect(response).to have_http_status(200)
@@ -33,7 +33,7 @@ RSpec.describe "Bins", type: :request do
       FactoryBot.create(:item, sku: "SKU-9999", bin_id: 2, category_id: 1)
       FactoryBot.create(:item, sku: "SKU-0001", bin_id: 4, category_id: 2)
 
-      get '/bins?category=Electronics'
+      get '/api/v1/bins?category=Electronics'
 
       expect(JSON.parse(response.body)).to eq({ "data"=>[ 1, 2 ], "message"=>"Success get bin numbers" })
       expect(response).to have_http_status(200)
@@ -41,7 +41,7 @@ RSpec.describe "Bins", type: :request do
 
     describe "when no items in category X" do
       it 'return message no items' do
-        get '/bins?category=Electronics'
+        get '/api/v1/bins?category=Electronics'
 
         expect(JSON.parse(response.body)["message"]).to eq("No items in this category")
         expect(response).to have_http_status(200)
@@ -49,20 +49,20 @@ RSpec.describe "Bins", type: :request do
     end
   end
 
-  describe "GET /bins/:sku" do
+  describe "GET /api/v1/bins/:sku" do
     it 'return bin number' do
       FactoryBot.create(:bin, bin_number: 6, warehouse_id: warehouse.id, filled: true, id: 1)
       FactoryBot.create(:category, name: "Electronics", id: 1)
       FactoryBot.create(:item, sku: "SKU-3141", bin_id: 1, category_id: 1)
 
-      get '/bins/SKU-3141'
+      get '/api/v1/bins/SKU-3141'
 
       expect(JSON.parse(response.body)).to eq(6)
       expect(response).to have_http_status(200)
     end
 
     it 'return not found' do
-      get '/bins/SKU-3141'
+      get '/api/v1/bins/SKU-3141'
 
       expect(JSON.parse(response.body)["message"]).to eq("SKU not found")
       expect(response).to have_http_status(404)

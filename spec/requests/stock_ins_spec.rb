@@ -3,17 +3,17 @@ require 'rails_helper'
 RSpec.describe "StockIns", type: :request do
   let!(:warehouse) { FactoryBot.create(:warehouse, total_bins: 10) }
 
-  describe "POST /stock_ins" do
+  describe "POST /api/v1/stock_ins" do
     it 'should validate warehouse' do
       Warehouse.delete_all
 
-      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+      post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
       expect(JSON.parse(response.body)["errors"]).to eq("No warehouse found")
     end
 
     it 'save item to warehouse' do
-      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+      post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
       expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
@@ -23,7 +23,7 @@ RSpec.describe "StockIns", type: :request do
     it 'should not create new category if exist' do
       FactoryBot.create(:category, name: "Electronics")
 
-      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+      post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
       expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
@@ -34,7 +34,7 @@ RSpec.describe "StockIns", type: :request do
       FactoryBot.create(:category, name: "Electronics", id: 1)
       FactoryBot.create(:item, sku: "SKU-001", id: 1, category_id: 1)
 
-      post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+      post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
       expect(JSON.parse(response.body)["errors"]).to be_nil
       expect(response).to have_http_status(:created)
@@ -46,7 +46,7 @@ RSpec.describe "StockIns", type: :request do
       it 'should not create bin if some bin empty' do
         FactoryBot.create(:bin, bin_number: 1, filled: false, warehouse_id: warehouse.id)
 
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to be_nil
         expect(response).to have_http_status(:created)
@@ -58,7 +58,7 @@ RSpec.describe "StockIns", type: :request do
         FactoryBot.create(:bin, bin_number: 2, filled: false, id: 1, warehouse_id: warehouse.id)
         FactoryBot.create(:bin, bin_number: 1, filled: false, id: 2, warehouse_id: warehouse.id)
 
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to be_nil
         expect(response).to have_http_status(:created)
@@ -74,7 +74,7 @@ RSpec.describe "StockIns", type: :request do
         FactoryBot.create(:bin, bin_number: 1, filled: true, warehouse_id: warehouse.id)
         FactoryBot.create(:bin, bin_number: 3, filled: false, warehouse_id: warehouse.id)
 
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to be_nil
         expect(response).to have_http_status(:created)
@@ -90,7 +90,7 @@ RSpec.describe "StockIns", type: :request do
         FactoryBot.create(:bin, bin_number: 1, filled: true, warehouse_id: warehouse.id)
         FactoryBot.create(:bin, bin_number: 4, filled: false, warehouse_id: warehouse.id)
 
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to be_nil
         expect(response).to have_http_status(:created)
@@ -106,7 +106,7 @@ RSpec.describe "StockIns", type: :request do
         FactoryBot.create(:bin, bin_number: 1, filled: true, warehouse_id: warehouse.id)
         FactoryBot.create(:bin, bin_number: 2, filled: true, warehouse_id: warehouse.id)
 
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to be_nil
         expect(response).to have_http_status(:created)
@@ -126,7 +126,7 @@ RSpec.describe "StockIns", type: :request do
         FactoryBot.create(:bin, bin_number: 2, filled: true, warehouse_id: warehouse.id)
         FactoryBot.create(:bin, bin_number: 3, filled: true, warehouse_id: warehouse.id)
 
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)["errors"]).to eq("Warehouse is full")
         expect(response).to have_http_status(:unprocessable_entity)
@@ -135,7 +135,7 @@ RSpec.describe "StockIns", type: :request do
 
     describe 'multiple request same sku' do
       before do
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)).to eq(
           { "bin_number" => 1, "message" => "Allocated bin number: 1" }
@@ -145,7 +145,7 @@ RSpec.describe "StockIns", type: :request do
 
       # make sku as idempotency key
       it 'return detail item and bin' do
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(JSON.parse(response.body)).to eq(
           { "bin_number" => 1, "message" => "Allocated bin number: 1" }
@@ -154,23 +154,23 @@ RSpec.describe "StockIns", type: :request do
       end
 
       it 'should only create 1 item' do
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(Item.count).to eq(1)
       end
 
       it 'should create 1 bin' do
-        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+        post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
         expect(Bin.count).to eq(1)
       end
     end
   end
 
-  describe "DELETE /stock_ins" do
+  describe "DELETE /api/v1/stock_ins" do
     describe "when bin not found" do
       it 'return 404' do
-        delete "/stock_ins/1"
+        delete "/api/v1/stock_ins/1"
 
         expect(JSON.parse(response.body)).to be_nil
         expect(response).to have_http_status(404)
@@ -183,7 +183,7 @@ RSpec.describe "StockIns", type: :request do
         category_electronic = FactoryBot.create(:category, name: "Electronics", id: 1)
         item = FactoryBot.create(:item, bin_id: bin.id, sku: "SKU-001", category_id: category_electronic.id)
 
-        delete "/stock_ins/1"
+        delete "/api/v1/stock_ins/1"
 
         # TODO: use spec helper for jsonparse
         expect(response).to have_http_status(200)
@@ -201,7 +201,7 @@ RSpec.describe "StockIns", type: :request do
         it 'should return empty bin' do
           FactoryBot.create(:bin, id: 1, filled: false, warehouse_id: warehouse.id, bin_number: 4)
 
-          delete "/stock_ins/4"
+          delete "/api/v1/stock_ins/4"
 
           expect(JSON.parse(response.body)["message"]).to eq("Empty bin")
           expect(response).to have_http_status(200)
