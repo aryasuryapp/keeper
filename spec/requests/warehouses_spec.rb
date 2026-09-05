@@ -30,11 +30,11 @@ RSpec.describe "Warehouses", type: :request do
       FactoryBot.create(:bin, bin_number: 2, warehouse_id: warehouse.id)
       FactoryBot.create(:bin, bin_number: 3, warehouse_id: warehouse.id, filled: true, id: 3)
 
-      FactoryBot.create(:category, name: "Electronics", id: 1)
-      FactoryBot.create(:category, name: "Apparel", id: 2)
+      category_electronics = FactoryBot.create(:category, name: "Electronics", id: 1)
+      category_apparel = FactoryBot.create(:category, name: "Apparel", id: 2)
 
-      FactoryBot.create(:item, sku: "SKU-001", bin_id: 1, category_id: 1)
-      FactoryBot.create(:item, sku: "SKU-102", bin_id: 3, category_id: 2)
+      FactoryBot.create(:item, sku: "SKU-001", bin_id: 1, category: category_electronics)
+      FactoryBot.create(:item, sku: "SKU-102", bin_id: 3, category: category_apparel)
 
       get '/api/v1/warehouses/status'
 

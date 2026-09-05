@@ -11,7 +11,7 @@ class WarehouseStatusService
     items = Item.where(bin_id: bins.pluck(:id))
     categories = Category.where(id: items.pluck(:category_id))
     bins.map do |bin|
-      item = items.find { |item| item.bin_id = bin.id }
+      item = items.find { |item| item.bin_id == bin.id }
       category_name = categories.find { |category| category.id == item.category_id }.name
       data << { "bin_number" => bin.bin_number, "sku" => item.sku, "category" => category_name }
     end
