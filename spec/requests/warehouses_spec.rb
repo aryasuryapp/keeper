@@ -18,8 +18,9 @@ RSpec.describe "Warehouses", type: :request do
 
   describe "POST /warehouses" do
     it "create warehouse" do
-      post '/warehouses', params: { warehouse: { total_bins: 8 } }
+      post '/warehouses', params: { warehouse: { total_bins: 6 } }
 
+      expect(JSON.parse(response.body)["message"]).to eq("Created a warehouse with 6 bins")
       expect(response).to have_http_status(:created)
       expect(Warehouse.count).to eq(1)
     end
