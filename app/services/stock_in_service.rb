@@ -10,7 +10,6 @@ class StockInService
       raise "No warehouse found"
     end
 
-    # TODO: add unique index in DB
     item = Item.find_by(sku: @params[:sku])
     if item.present? && item.bin_id
       bin = Bin.find(item.bin_id)

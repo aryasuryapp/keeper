@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_03_020020) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_210744) do
   create_table "bins", force: :cascade do |t|
     t.integer "bin_number"
     t.datetime "created_at", null: false
@@ -34,6 +34,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_020020) do
     t.datetime "updated_at", null: false
     t.index ["bin_id"], name: "index_items_on_bin_id"
     t.index ["category_id"], name: "index_items_on_category_id"
+    t.index ["sku"], name: "index_items_on_sku", unique: true
   end
 
   create_table "warehouses", force: :cascade do |t|
