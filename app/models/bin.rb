@@ -4,7 +4,7 @@ class Bin < ApplicationRecord
 
   before_save :validate_max_bins
 
-  has_one :item
+  has_one :item, dependent: :destroy
 
   # TODO: warehouse deleted, bin should be deleted
 
