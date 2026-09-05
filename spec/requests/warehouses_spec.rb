@@ -7,6 +7,7 @@ RSpec.describe "Warehouses", type: :request do
 
   describe "GET /warehouses" do
     it 'returns all warehouses' do
+      Warehouse.delete_all
       FactoryBot.create(:warehouse)
 
       get '/warehouses'
@@ -18,6 +19,7 @@ RSpec.describe "Warehouses", type: :request do
 
   describe "POST /warehouses" do
     it "create warehouse" do
+      Warehouse.delete_all
       post '/warehouses', params: { warehouse: { total_bins: 8 } }
 
       expect(response).to have_http_status(:created)
