@@ -83,6 +83,13 @@ RSpec.describe "StockIns", type: :request do
         expect(JSON.parse(response.body)["errors"]).to eq("Warehouse is full")
         expect(response).to have_http_status(:unprocessable_entity)
       end
+
+      xit 'should create nearest bin' do
+        # bin 1 present but filled
+        # bin 2 not present
+        # bin 3 present empty
+        # should use bin 2
+      end
     end
 
     describe 'multiple request same sku' do
