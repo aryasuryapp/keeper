@@ -102,6 +102,22 @@ RSpec.describe "StockIns", type: :request do
         )
       end
 
+      it 'should create new bin' do
+        FactoryBot.create(:bin, bin_number: 1, filled: true, warehouse_id: warehouse.id)
+        FactoryBot.create(:bin, bin_number: 2, filled: true, warehouse_id: warehouse.id)
+
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+
+        expect(JSON.parse(response.body)["errors"]).to be_nil
+        expect(response).to have_http_status(:created)
+        expect(JSON.parse(response.body)).to eq(
+          {
+            "bin_number" => 3,
+            "message" => "Allocated bin number: 3"
+          }
+        )
+      end
+
       it 'should validate max bin' do
         warehouse = Warehouse.first
         warehouse.update!(total_bins: 3)

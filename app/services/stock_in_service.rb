@@ -47,12 +47,12 @@ class StockInService
   def use_nearest_bin(warehouse)
     empty_bin = nil
     bins = Bin.where(warehouse_id: warehouse.id).order(:bin_number)
-    if bins.empty?
-      return Bin.create!(warehouse: warehouse, bin_number: 1)
-    end
 
     for i in 0..warehouse.total_bins-1
-      if bins[i].bin_number == i + 1 && bins[i].filled == true
+      if bins[i].nil?
+        empty_bin = Bin.create!(warehouse: warehouse, bin_number: i + 1)
+        break
+      elsif bins[i].bin_number == i + 1 && bins[i].filled == true
       elsif bins[i].bin_number == i + 1
         empty_bin = bins[i]
         break
