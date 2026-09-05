@@ -1,5 +1,5 @@
 class WarehousesController < ApplicationController
-  def show
+  def index
     render json: Warehouse.all
   end
 
