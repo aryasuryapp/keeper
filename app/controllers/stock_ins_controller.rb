@@ -11,6 +11,19 @@ class StockInsController < ApplicationController
     }, status: :unprocessable_entity
   end
 
+  def destroy
+    bin = Bin.find(params[:id])
+    bin.update!(filled: false)
+
+    item = bin.item
+    item.update!(bin_id: nil)
+
+    render json: {
+      "message": "Bin number #{bin.bin_number} is free"
+    },
+    status: :ok
+  end
+
   private
 
   def item_params

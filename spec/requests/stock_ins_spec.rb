@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe "StockIns", type: :request do
+  let!(:warehouse) { FactoryBot.create(:warehouse, total_bins: 10) }
+
   describe "GET /index" do
     pending "add some examples (or delete) #{__FILE__}"
   end
 
   describe "POST /stock_ins" do
-    let!(:warehouse) { FactoryBot.create(:warehouse, total_bins: 10) }
-
     it 'should validate warehouse' do
       Warehouse.delete_all
 
@@ -88,6 +88,26 @@ RSpec.describe "StockIns", type: :request do
       expect(response).to have_http_status(:created)
       expect(Item.count).to eq(1)
       expect(Item.first.bin_id).not_to be_nil
+    end
+  end
+
+  describe "DELETE /stock_ins" do
+    it 'should free bin and delete bin_id on item' do
+      bin = FactoryBot.create(:bin, id: 1, filled: true, warehouse_id: warehouse.id, bin_number: 1)
+      item = FactoryBot.create(:item, bin_id: bin.id, sku: "SKU-001")
+
+      delete "/stock_ins/1"
+
+      # TODO: use spec helper for jsonparse
+      expect(response).to have_http_status(200)
+      expect(JSON.parse(response.body)).to eq(
+        { "message" => "Bin number #{bin.bin_number} is free" }
+      )
+
+      bin.reload
+      item.reload
+      expect(bin.filled).to be false
+      expect(item.bin_id).to be_nil
     end
   end
 end

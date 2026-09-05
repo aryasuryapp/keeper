@@ -1,10 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe "Warehouses", type: :request do
-  describe "GET /index" do
-    pending "add some examples (or delete) #{__FILE__}"
-  end
-
   describe "GET /warehouses" do
     it 'returns all warehouses' do
       FactoryBot.create(:warehouse)
