@@ -185,7 +185,6 @@ RSpec.describe "StockIns", type: :request do
 
         delete "/api/v1/stock_ins/1"
 
-        # TODO: use spec helper for jsonparse
         expect(response).to have_http_status(200)
         expect(response_body).to eq(
           { "message" => "Bin number #{bin.bin_number} is free" }
