@@ -120,23 +120,45 @@ RSpec.describe "StockIns", type: :request do
   end
 
   describe "DELETE /stock_ins" do
-    it 'should free bin and delete bin_id on item' do
-      bin = FactoryBot.create(:bin, id: 1, filled: true, warehouse_id: warehouse.id, bin_number: 1)
-      category_electronic = FactoryBot.create(:category, name: "Electronics", id: 1)
-      item = FactoryBot.create(:item, bin_id: bin.id, sku: "SKU-001", category_id: category_electronic.id)
+    describe "when bin not found" do
+      it 'return 404' do
+        delete "/stock_ins/1"
 
-      delete "/stock_ins/1"
+        expect(JSON.parse(response.body)).to be_nil
+        expect(response).to have_http_status(404)
+      end
+    end
 
-      # TODO: use spec helper for jsonparse
-      expect(response).to have_http_status(200)
-      expect(JSON.parse(response.body)).to eq(
-        { "message" => "Bin number #{bin.bin_number} is free" }
-      )
+    describe "when bin found" do
+      it 'should free bin and delete bin_id on item' do
+        bin = FactoryBot.create(:bin, id: 1, filled: true, warehouse_id: warehouse.id, bin_number: 1)
+        category_electronic = FactoryBot.create(:category, name: "Electronics", id: 1)
+        item = FactoryBot.create(:item, bin_id: bin.id, sku: "SKU-001", category_id: category_electronic.id)
 
-      bin.reload
-      item.reload
-      expect(bin.filled).to be false
-      expect(item.bin_id).to be_nil
+        delete "/stock_ins/1"
+
+        # TODO: use spec helper for jsonparse
+        expect(response).to have_http_status(200)
+        expect(JSON.parse(response.body)).to eq(
+          { "message" => "Bin number #{bin.bin_number} is free" }
+        )
+
+        bin.reload
+        item.reload
+        expect(bin.filled).to be false
+        expect(item.bin_id).to be_nil
+      end
+
+      describe "when already empty" do
+        it 'should return empty bin' do
+          FactoryBot.create(:bin, id: 1, filled: false, warehouse_id: warehouse.id, bin_number: 4)
+
+          delete "/stock_ins/4"
+
+          expect(JSON.parse(response.body)["message"]).to eq("Empty bin")
+          expect(response).to have_http_status(200)
+        end
+      end
     end
   end
 end

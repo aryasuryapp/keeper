@@ -10,7 +10,12 @@ class StockInsController < ApplicationController
   end
 
   def destroy
-    bin = Bin.find(params[:id])
+    bin = Bin.find_by(bin_number: params[:id])
+    if !bin
+      return render json: nil, status: :not_found
+    elsif bin.filled != true
+      return render json: { message: "Empty bin" }, status: :ok
+    end
     bin.update!(filled: false)
 
     item = bin.item
