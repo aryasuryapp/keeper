@@ -14,10 +14,14 @@ class StockInService
       category = Category.create!(name: @params["name"])
     end
 
-    bin = Bin.where(filled: false).order(:bin_number).first
+    bin = Bin.where(filled: false, warehouse_id: warehouse.id).order(:bin_number).first
     unless bin
-      # TODO: add validation max bin in warehouse
-      bin = Bin.create!(filled: true)
+      last_bin = Bin.where(warehouse_id: warehouse.id).order(:bin_number).last
+      if last_bin
+        bin = Bin.create!(filled: true, warehouse_id: warehouse.id, bin_number: (last_bin.bin_number + 1))
+      else
+        bin = Bin.create!(filled: true, warehouse_id: warehouse.id, bin_number: 1)
+      end
     end
 
     # TODO: add unique index in DB
