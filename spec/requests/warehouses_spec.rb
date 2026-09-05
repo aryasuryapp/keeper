@@ -8,7 +8,7 @@ RSpec.describe "Warehouses", type: :request do
       get '/api/v1/warehouses'
 
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).size).to eq(1)
+      expect(response_body.size).to eq(1)
     end
   end
 
@@ -16,7 +16,7 @@ RSpec.describe "Warehouses", type: :request do
     it "create warehouse" do
       post '/api/v1/warehouses', params: { warehouse: { total_bins: 6 } }
 
-      expect(JSON.parse(response.body)["message"]).to eq("Created a warehouse with 6 bins")
+      expect(response_body["message"]).to eq("Created a warehouse with 6 bins")
       expect(response).to have_http_status(:created)
       expect(Warehouse.count).to eq(1)
     end
@@ -38,7 +38,7 @@ RSpec.describe "Warehouses", type: :request do
 
       get '/api/v1/warehouses/status'
 
-      expect(JSON.parse(response.body)).to eq(
+      expect(response_body).to eq(
         [
           { "bin_number" => 1, "sku" => "SKU-001", "category" => "Electronics" },
           { "bin_number" => 3, "sku" => "SKU-102", "category" => "Apparel" }
