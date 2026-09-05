@@ -6,7 +6,9 @@ class StockInsController < ApplicationController
     render json: item, status: :created
 
   rescue => e
-    render json: e, status: :unprocessable_entity
+    render json: {
+      errors: e
+    }, status: :unprocessable_entity
   end
 
   private
