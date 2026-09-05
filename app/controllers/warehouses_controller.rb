@@ -11,8 +11,25 @@ class WarehousesController < ApplicationController
         message: "Created a warehouse with #{warehouse.total_bins} bins"
       }, status: :created
     else
-      render json: warehouse.errors, status: unprocessable_entity
+      render json: warehouse.errors, status: :unprocessable_entity
     end
+  end
+
+  def status
+    # Given only have 1 warehouse
+    warehouse = Warehouse.first
+    unless warehouse
+      raise "No warehouse found"
+    end
+
+    bins = ::WarehouseStatusService.new(warehouse.id).call
+
+    render json: bins, status: :ok
+
+  rescue => e
+    render json: {
+      errors: e
+    }, status: :unprocessable_entity
   end
 
   private
