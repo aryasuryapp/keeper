@@ -12,4 +12,5 @@ Rails.application.routes.draw do
   resources :warehouses, only: [ :index, :create ]
   get "warehouses/status", to: "warehouses#status"
   resources :stock_ins, only: [ :create, :destroy ]
+  resources :items, only: [ :index ]
 end
