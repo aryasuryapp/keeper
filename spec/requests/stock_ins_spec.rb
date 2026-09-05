@@ -3,10 +3,6 @@ require 'rails_helper'
 RSpec.describe "StockIns", type: :request do
   let!(:warehouse) { FactoryBot.create(:warehouse, total_bins: 10) }
 
-  describe "GET /index" do
-    pending "add some examples (or delete) #{__FILE__}"
-  end
-
   describe "POST /stock_ins" do
     it 'should validate warehouse' do
       Warehouse.delete_all

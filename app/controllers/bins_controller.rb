@@ -18,6 +18,19 @@ class BinsController < ApplicationController
     render json: data, status: :ok
   end
 
+  def show
+    item = Item.find_by(sku: params[:id])
+
+    unless item
+      return render json: {
+        message: "SKU not found"
+      }, status: :not_found
+    else
+      bin = Bin.find(item.bin_id)
+    end
+    render json: bin.bin_number, status: :ok
+  end
+
   private
 
   def item_params
