@@ -8,7 +8,12 @@ class StockInService
     unless category
       category = Category.create!(name: @params["name"])
     end
-    bin = Bin.create!(bin_number: 1)
+
+    bin = Bin.where(filled: false).order(:bin_number).first
+    unless bin
+      # TODO: add validation max bin in warehouse
+      bin = Bin.create!(filled: true)
+    end
 
     item = Item.new(sku: @params["sku"], category_id: category.id, bin_id: bin.id)
     item.save!
