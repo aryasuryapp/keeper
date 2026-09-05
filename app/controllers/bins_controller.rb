@@ -1,21 +1,11 @@
 class BinsController < ApplicationController
   def index
-    category = Category.find_by(name: item_params[:category])
-    unless category
-      return render json: {
-        "message": "No items in this category"
-      }
-    end
-
-    items = Item.where(category: category.id).where.not(bin_id: nil)
-    data = []
-    items.map do |item|
-      # TODO: check query
-      bin = Bin.find(item.bin_id)
-      data << bin.bin_number
-    end
-
-    render json: data, status: :ok
+    result = ::BinsService.new(item_params).call
+    render json: {
+      data: result[:data],
+      message: result[:message]
+    },
+    status: result[:status]
   end
 
   def show
