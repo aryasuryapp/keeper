@@ -10,9 +10,9 @@ class StockInService
       raise "No warehouse found"
     end
 
-    category = Category.find_by(name: @params["name"])
+    category = Category.find_by(name: @params[:category])
     unless category
-      category = Category.create!(name: @params["name"])
+      category = Category.create!(name: @params[:category])
     end
 
     bin = Bin.where(filled: false, warehouse_id: warehouse.id).order(:bin_number).first
@@ -28,9 +28,9 @@ class StockInService
     end
 
     # TODO: add unique index in DB
-    item = Item.find_by(sku: @params["sku"])
+    item = Item.find_by(sku: @params[:sku])
     if item.nil?
-      item = Item.new(sku: @params["sku"], category_id: category.id, bin_id: bin.id)
+      item = Item.new(sku: @params[:sku], category_id: category.id, bin_id: bin.id)
     elsif item.bin_id
       return item
     else
