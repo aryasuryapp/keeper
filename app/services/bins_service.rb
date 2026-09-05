@@ -15,12 +15,7 @@ class BinsService
       items = Item.where.not(bin_id: nil)
     end
 
-    data = []
-    items.map do |item|
-      # TODO: check query
-      bin = Bin.find(item.bin_id)
-      data << bin.bin_number
-    end
+    data = Bin.where(id: items.pluck(:bin_id)).pluck(:bin_number)
 
     message(data, "Success get bin numbers", :ok)
   end
