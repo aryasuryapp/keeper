@@ -15,7 +15,7 @@ RSpec.describe "Items", type: :request do
 
       get '/api/v1/items?category=Electronics'
 
-      expect(JSON.parse(response.body)).to eq([ "SKU-1234", "SKU-9999" ])
+      expect(response_body).to eq([ "SKU-1234", "SKU-9999" ])
       expect(response).to have_http_status(200)
     end
 
@@ -23,7 +23,7 @@ RSpec.describe "Items", type: :request do
       it 'return message no items' do
         get '/api/v1/items?category=Electronics'
 
-        expect(JSON.parse(response.body)["message"]).to eq("No items in this category")
+        expect(response_body["message"]).to eq("No items in this category")
         expect(response).to have_http_status(200)
       end
     end

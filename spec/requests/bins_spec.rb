@@ -17,7 +17,7 @@ RSpec.describe "Bins", type: :request do
 
       get '/api/v1/bins'
 
-      expect(JSON.parse(response.body)).to eq({ "data"=>[ 1, 2, 4 ], "message"=>"Success get bin numbers" })
+      expect(response_body).to eq({ "data"=>[ 1, 2, 4 ], "message"=>"Success get bin numbers" })
       expect(response).to have_http_status(200)
     end
 
@@ -35,7 +35,7 @@ RSpec.describe "Bins", type: :request do
 
       get '/api/v1/bins?category=Electronics'
 
-      expect(JSON.parse(response.body)).to eq({ "data"=>[ 1, 2 ], "message"=>"Success get bin numbers" })
+      expect(response_body).to eq({ "data"=>[ 1, 2 ], "message"=>"Success get bin numbers" })
       expect(response).to have_http_status(200)
     end
 
@@ -43,7 +43,7 @@ RSpec.describe "Bins", type: :request do
       it 'return message no items' do
         get '/api/v1/bins?category=Electronics'
 
-        expect(JSON.parse(response.body)["message"]).to eq("No items in this category")
+        expect(response_body["message"]).to eq("No items in this category")
         expect(response).to have_http_status(200)
       end
     end
@@ -57,14 +57,14 @@ RSpec.describe "Bins", type: :request do
 
       get '/api/v1/bins/SKU-3141'
 
-      expect(JSON.parse(response.body)).to eq(6)
+      expect(response_body).to eq(6)
       expect(response).to have_http_status(200)
     end
 
     it 'return not found' do
       get '/api/v1/bins/SKU-3141'
 
-      expect(JSON.parse(response.body)["message"]).to eq("SKU not found")
+      expect(response_body["message"]).to eq("SKU not found")
       expect(response).to have_http_status(404)
     end
   end

@@ -9,13 +9,13 @@ RSpec.describe "StockIns", type: :request do
 
       post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-      expect(JSON.parse(response.body)["errors"]).to eq("No warehouse found")
+      expect(response_body["errors"]).to eq("No warehouse found")
     end
 
     it 'save item to warehouse' do
       post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-      expect(JSON.parse(response.body)["errors"]).to be_nil
+      expect(response_body["errors"]).to be_nil
       expect(response).to have_http_status(:created)
       expect(Item.count).to eq(1)
     end
@@ -25,7 +25,7 @@ RSpec.describe "StockIns", type: :request do
 
       post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-      expect(JSON.parse(response.body)["errors"]).to be_nil
+      expect(response_body["errors"]).to be_nil
       expect(response).to have_http_status(:created)
       expect(Category.count).to eq(1)
     end
@@ -36,7 +36,7 @@ RSpec.describe "StockIns", type: :request do
 
       post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-      expect(JSON.parse(response.body)["errors"]).to be_nil
+      expect(response_body["errors"]).to be_nil
       expect(response).to have_http_status(:created)
       expect(Item.count).to eq(1)
       expect(Item.first.bin_id).not_to be_nil
@@ -48,7 +48,7 @@ RSpec.describe "StockIns", type: :request do
 
         post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-        expect(JSON.parse(response.body)["errors"]).to be_nil
+        expect(response_body["errors"]).to be_nil
         expect(response).to have_http_status(:created)
         expect(Bin.count).to eq(1)
         expect(Bin.first.filled).to eq(true)
@@ -60,9 +60,9 @@ RSpec.describe "StockIns", type: :request do
 
         post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-        expect(JSON.parse(response.body)["errors"]).to be_nil
+        expect(response_body["errors"]).to be_nil
         expect(response).to have_http_status(:created)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response_body).to eq(
           {
             "bin_number" => 1,
             "message" => "Allocated bin number: 1"
@@ -76,9 +76,9 @@ RSpec.describe "StockIns", type: :request do
 
         post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-        expect(JSON.parse(response.body)["errors"]).to be_nil
+        expect(response_body["errors"]).to be_nil
         expect(response).to have_http_status(:created)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response_body).to eq(
           {
             "bin_number" => 2,
             "message" => "Allocated bin number: 2"
@@ -92,9 +92,9 @@ RSpec.describe "StockIns", type: :request do
 
         post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-        expect(JSON.parse(response.body)["errors"]).to be_nil
+        expect(response_body["errors"]).to be_nil
         expect(response).to have_http_status(:created)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response_body).to eq(
           {
             "bin_number" => 2,
             "message" => "Allocated bin number: 2"
@@ -108,9 +108,9 @@ RSpec.describe "StockIns", type: :request do
 
         post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-        expect(JSON.parse(response.body)["errors"]).to be_nil
+        expect(response_body["errors"]).to be_nil
         expect(response).to have_http_status(:created)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response_body).to eq(
           {
             "bin_number" => 3,
             "message" => "Allocated bin number: 3"
@@ -128,7 +128,7 @@ RSpec.describe "StockIns", type: :request do
 
         post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-        expect(JSON.parse(response.body)["errors"]).to eq("Warehouse is full")
+        expect(response_body["errors"]).to eq("Warehouse is full")
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -137,7 +137,7 @@ RSpec.describe "StockIns", type: :request do
       before do
         post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-        expect(JSON.parse(response.body)).to eq(
+        expect(response_body).to eq(
           { "bin_number" => 1, "message" => "Allocated bin number: 1" }
         )
         expect(response).to have_http_status(201)
@@ -147,7 +147,7 @@ RSpec.describe "StockIns", type: :request do
       it 'return detail item and bin' do
         post '/api/v1/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
 
-        expect(JSON.parse(response.body)).to eq(
+        expect(response_body).to eq(
           { "bin_number" => 1, "message" => "Allocated bin number: 1" }
         )
         expect(response).to have_http_status(200)
@@ -172,7 +172,7 @@ RSpec.describe "StockIns", type: :request do
       it 'return 404' do
         delete "/api/v1/stock_ins/1"
 
-        expect(JSON.parse(response.body)).to be_nil
+        expect(response_body).to be_nil
         expect(response).to have_http_status(404)
       end
     end
@@ -187,7 +187,7 @@ RSpec.describe "StockIns", type: :request do
 
         # TODO: use spec helper for jsonparse
         expect(response).to have_http_status(200)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response_body).to eq(
           { "message" => "Bin number #{bin.bin_number} is free" }
         )
 
@@ -203,7 +203,7 @@ RSpec.describe "StockIns", type: :request do
 
           delete "/api/v1/stock_ins/4"
 
-          expect(JSON.parse(response.body)["message"]).to eq("Empty bin")
+          expect(response_body["message"]).to eq("Empty bin")
           expect(response).to have_http_status(200)
         end
       end
