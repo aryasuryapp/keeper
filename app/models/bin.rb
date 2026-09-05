@@ -1,10 +1,12 @@
 class Bin < ApplicationRecord
   validates :warehouse_id, presence: true
-  validates :bin_number, presence: true
+  # TODO: bin number should be unique in scope warehouse
+  validates :bin_number, presence: true, uniqueness: { scope: :warehouse }
 
   before_save :validate_max_bins
 
   has_one :item, dependent: :destroy
+  belongs_to :warehouse
 
   # TODO: warehouse deleted, bin should be deleted
 

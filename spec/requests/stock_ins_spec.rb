@@ -70,6 +70,38 @@ RSpec.describe "StockIns", type: :request do
         )
       end
 
+      it 'should create nearest bin' do
+        FactoryBot.create(:bin, bin_number: 1, filled: true, warehouse_id: warehouse.id)
+        FactoryBot.create(:bin, bin_number: 3, filled: false, warehouse_id: warehouse.id)
+
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+
+        expect(JSON.parse(response.body)["errors"]).to be_nil
+        expect(response).to have_http_status(:created)
+        expect(JSON.parse(response.body)).to eq(
+          {
+            "bin_number" => 2,
+            "message" => "Allocated bin number: 2"
+          }
+        )
+      end
+
+      it 'should create nearest bin' do
+        FactoryBot.create(:bin, bin_number: 1, filled: true, warehouse_id: warehouse.id)
+        FactoryBot.create(:bin, bin_number: 4, filled: false, warehouse_id: warehouse.id)
+
+        post '/stock_ins', params: { sku: "SKU-001", category: "Electronics" }
+
+        expect(JSON.parse(response.body)["errors"]).to be_nil
+        expect(response).to have_http_status(:created)
+        expect(JSON.parse(response.body)).to eq(
+          {
+            "bin_number" => 2,
+            "message" => "Allocated bin number: 2"
+          }
+        )
+      end
+
       it 'should validate max bin' do
         warehouse = Warehouse.first
         warehouse.update!(total_bins: 3)
@@ -82,13 +114,6 @@ RSpec.describe "StockIns", type: :request do
 
         expect(JSON.parse(response.body)["errors"]).to eq("Warehouse is full")
         expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      xit 'should create nearest bin' do
-        # bin 1 present but filled
-        # bin 2 not present
-        # bin 3 present empty
-        # should use bin 2
       end
     end
 
