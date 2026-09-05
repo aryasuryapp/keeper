@@ -4,6 +4,11 @@ class StockInService
   end
 
   def call
+    warehouse = Warehouse.first
+    unless warehouse
+      raise "No warehouse found"
+    end
+
     category = Category.find_by(name: @params["name"])
     unless category
       category = Category.create!(name: @params["name"])
