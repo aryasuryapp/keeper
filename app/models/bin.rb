@@ -7,8 +7,6 @@ class Bin < ApplicationRecord
   has_one :item, dependent: :destroy
   belongs_to :warehouse
 
-  # TODO: warehouse deleted, bin should be deleted
-
   private
 
   def validate_max_bins
