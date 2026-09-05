@@ -33,6 +33,7 @@ RSpec.describe "StockIns", type: :request do
         expect(JSON.parse(response.body)["errors"]).to be_nil
         expect(response).to have_http_status(:created)
         expect(Bin.count).to eq(1)
+        expect(Bin.first.filled).to eq(true)
       end
 
       it 'should use nearest bin' do
